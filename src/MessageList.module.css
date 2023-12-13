@@ -1,0 +1,5 @@
+.MessageList {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse;
+}

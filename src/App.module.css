@@ -1,0 +1,17 @@
+.appLayout {
+  display: flex;
+  flex-direction: row; /* Side-by-side layout */
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.appLayout > :first-child {
+  width: 10rem;
+  flex-basis: 10rem;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+.appLayout > :last-child {
+  flex: 1;
+}
