@@ -4,6 +4,7 @@ import { useSnapshot } from "valtio";
 import styles from "./App.module.css";
 import { store, creatorType, creatorTypes } from "./store";
 import { MessageCell } from "./MessageCell";
+import { HoldCenter } from "./HoldCenter";
 
 function App() {
   const snap = useSnapshot(store);
@@ -32,13 +33,12 @@ function App() {
           <pre>{JSON.stringify(snap.debug, null, 2)}</pre>
         </code>
       </div>
-      <MessageList
-        header={<h1>This is the top of the thing, yada yada yada </h1>}
-      >
+      <HoldCenter>
+        <h1>This is the top of the thing, yada yada yada </h1>
         {snap.messages.map((m) => (
           <MessageCell message={m} key={m.id} />
         ))}
-      </MessageList>
+      </HoldCenter>
     </div>
   );
 }
