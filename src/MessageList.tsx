@@ -96,7 +96,7 @@ export const MessageList: FC<PropsWithChildren<{ header: ReactNode }>> = ({
       }]`
     );
 
-    if (newTop && newTop !== topElement.current) {
+    if (newTop && topElement.current && newTop !== topElement.current) {
       const h =
         newTop!.getBoundingClientRect().top -
         topElement.current!.getBoundingClientRect().top;
