@@ -1,5 +1,6 @@
-import { Message } from './Message';
-import styles from './MessageItem.module.css';
+import { useRef, useState } from "react";
+import { Message } from "./Message";
+import styles from "./MessageItem.module.css";
 
 export function MessageCell({ message }: { message: Message }) {
   return (

@@ -1,14 +1,23 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
-import { Message } from "./Message";
-import { MessageCell } from "./MessageCell";
+import {
+  FC,
+  PropsWithChildren,
+  ReactNode,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+} from "react";
 import styles from "./MessageList.module.css";
 import { store } from "./store";
 
-export function MessageList({ messages }: { messages: readonly Message[] }) {
+export const MessageList: FC<PropsWithChildren<{ header: ReactNode }>> = ({
+  children,
+  header,
+}) => {
   const scroller = useRef<HTMLDivElement | null>(null);
   const contents = useRef<HTMLDivElement | null>(null);
   const topElement = useRef<Element | null>(null);
   const bottomElement = useRef<Element | null>(null);
+  const headerWrapper = useRef<HTMLDivElement | null>(null);
 
   const scrollTop = useRef<number | null>(null);
   const atBottom = useRef<boolean | null>(null);
@@ -28,7 +37,12 @@ export function MessageList({ messages }: { messages: readonly Message[] }) {
     // todo:
     const _atTop =
       scroller.current.scrollTop <
-      -(contentsRect.height - scrollerRect.height - 50);
+      -(
+        contentsRect.height -
+        scrollerRect.height -
+        (50 + headerWrapper.current!.clientHeight)
+      );
+
     const _atBottom = scroller.current.scrollTop > -50;
 
     atBottom.current = _atBottom;
@@ -62,7 +76,7 @@ export function MessageList({ messages }: { messages: readonly Message[] }) {
       console.log("MAGIC HAPPENED!!!");
     }
 
-    const newTop = contents.current.firstElementChild;
+    const newTop = headerWrapper.current?.nextElementSibling;
     const newBottom = contents.current.lastElementChild;
 
     const scrollerRect = scroller.current.getBoundingClientRect();
@@ -83,15 +97,24 @@ export function MessageList({ messages }: { messages: readonly Message[] }) {
     );
 
     if (newTop && newTop !== topElement.current) {
-      console.log("Element added to top ", newTop, topElement.current);
-      const topHeight = newTop.getBoundingClientRect().height;
-      console.log("Add ", topHeight, "to ", scroller.current.scrollTop);
-      // scroller.current.scrollTop += topHeight;
-      console.log("After: ", scroller.current.scrollTop);
+      const h =
+        newTop!.getBoundingClientRect().top -
+        topElement.current!.getBoundingClientRect().top;
+
+      if (atTop.current && browserFixedScrollPosition) {
+        console.log("We should adjust the top");
+        scroller.current.scrollTop -= h;
+      }
     }
-    if (newBottom !== bottomElement.current) {
+    if (
+      newBottom &&
+      bottomElement.current &&
+      newBottom !== bottomElement.current
+    ) {
       console.log("Element added to bottom", newBottom, bottomElement.current);
-      const h = newBottom?.getBoundingClientRect().height;
+      const h =
+        newBottom!.getBoundingClientRect().bottom -
+        bottomElement.current!.getBoundingClientRect().bottom;
       console.log("Item height: ", h);
       if (!atBottom.current && !browserFixedScrollPosition) {
         console.log(`Moving  stuff: ${h} ${scroller.current.scrollTop}`);
@@ -102,15 +125,14 @@ export function MessageList({ messages }: { messages: readonly Message[] }) {
 
     topElement.current = newTop;
     bottomElement.current = newBottom;
-  }, [messages]);
+  });
 
   return (
     <div className={styles.MessageList} onScroll={onScroll} ref={scroller}>
       <div ref={contents}>
-        {messages.map((m) => (
-          <MessageCell message={m} key={m.id} />
-        ))}
+        <div ref={headerWrapper}>{header}</div>
+        {children}
       </div>
     </div>
   );
-}
+};

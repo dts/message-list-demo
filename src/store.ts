@@ -1,6 +1,6 @@
-import { faker } from '@faker-js/faker';
-import { proxy } from 'valtio';
-import type { Message } from './Message';
+import { faker } from "@faker-js/faker";
+import { proxy } from "valtio";
+import type { Message } from "./Message";
 
 const creators = {
   withImage: () => ({
@@ -23,7 +23,7 @@ export const creatorTypes = Object.keys(creators);
 
 export function creatorType(val: string): CreatorType {
   if (creatorTypes.includes(val)) return val as CreatorType;
-  throw new Error('Unexpected type ' + val);
+  throw new Error("Unexpected type " + val);
 }
 
 function randomMessages(count: number = 10): Message[] {
@@ -39,12 +39,14 @@ export const store = proxy({
   debug: undefined as undefined | JSON,
 
   messages: randomMessages(10),
-  typeToCreate: 'withImage' as CreatorType,
-  addToTop() {
-    this.messages.unshift(creators[this.typeToCreate]());
+  typeToCreate: "withImage" as CreatorType,
+  addToTop(n = 1) {
+    for (let i = 0; i < n; i++)
+      this.messages.unshift(creators[this.typeToCreate]());
   },
-  addToBottom() {
-    this.messages.push(creators[this.typeToCreate]());
+  addToBottom(n = 1) {
+    for (let i = 0; i < n; i++)
+      this.messages.push(creators[this.typeToCreate]());
   },
   setType(newType: CreatorType) {
     this.typeToCreate = newType;
