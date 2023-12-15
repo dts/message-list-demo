@@ -3,7 +3,6 @@ import styles from "./HoldCenter.module.css";
 
 export const HoldCenter: FC<PropsWithChildren> = ({ children }) => {
   const scroller = useRef<HTMLDivElement | null>(null);
-  const content = useRef<HTMLDivElement | null>(null);
 
   const scrollTop = useRef<number | null>(null);
 
@@ -11,7 +10,6 @@ export const HoldCenter: FC<PropsWithChildren> = ({ children }) => {
   const topToHold = useRef<number | null>(null);
 
   function onScroll() {
-    if (!content.current) throw new Error("oopsie");
     if (!scroller.current) throw new Error("doopsei");
     const bounds = scroller.current?.getBoundingClientRect();
     if (!bounds) throw new Error("no bounds");
@@ -31,7 +29,7 @@ export const HoldCenter: FC<PropsWithChildren> = ({ children }) => {
   useLayoutEffect(() => {
     if (!scroller.current || !scrollTop.current) return;
 
-    if (scrollTop.current > -50) {
+    if (scrollTop.current < -50) {
       scroller.current.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       const newTop = pieceToHold.current?.getBoundingClientRect().top;
@@ -44,9 +42,7 @@ export const HoldCenter: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <div className={styles.ScrollContainer} ref={scroller} onScroll={onScroll}>
-      <div className={styles.ContentContainer} ref={content}>
-        {children}
-      </div>
+      <div className={styles.ContentContainer}>{children}</div>
     </div>
   );
 };
